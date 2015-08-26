@@ -74,7 +74,7 @@ overview_theme
 ## 7       rural  4   11.00000 3.559026 1.7795130
 ## 8    tropical  8    8.75000 3.150964 1.1140339
 ```
-**We can see that the average wind speed is 11.0 ± 0.4 mph.**
+**We can see that the average wind speed is 11.0 Â± 0.4 mph.**
 
 ### Pretty plots!
 OK, here's the part everyone was waiting for...
@@ -124,7 +124,8 @@ wind_ecdf2
 ![](TGCwinds_files/figure-html/unnamed-chunk-6-1.png) 
 
 **We see that we only have a 34.9% chance to have single digit winds for a given tournament round.**
-(A cumulative distribution gives you the probability of getting a value = x on a sample, so we read up from 9 mph and go left to find the chances of getting a wind speed of 9 or less.)
+
+(A cumulative distribution gives you the probability of getting a value &le; x on a sample, so we read up from 9 mph and go left to find the chances of getting a wind speed of 9 or less.)
 
 We can also look at the direction of the wind, and plot a form of windrose.
 
