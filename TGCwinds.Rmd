@@ -1,0 +1,125 @@
+---
+title: "TGC Tournament Winds"
+author: "fuzion"
+date: "25 August 2015"
+output: html_document
+---
+### Introduction
+I have collected a sample of wind speeds and directions in tournaments for [The Golf Club](http://www.thegolfclubgame.com). 
+These are both from rounds that I have played, and from other people (usually by watching their rounds on [twitch](http://www.twitch.tv/directory/game/The%20Golf%20Club)).
+
+I am using [R](https://www.r-project.org/) for the data analysis and presentation.
+I include the data in full (at the end of this document), and the code used to generate this analysis in order to make it reproducable.
+
+### Data import
+
+```{r load_packages, include=FALSE}
+library(broman)
+library(formatR)
+```
+```{r message=FALSE}
+library(dplyr)
+library(magrittr)
+library(ggplot2)
+```
+
+First, I read in the data.
+```{r}
+url <- "C:/Users/Matt/Documents/speedgolf/windspeeds.txt" # Point this to the data.
+data <- read.table(url, header = TRUE, stringsAsFactors = FALSE)
+head(data)
+```
+The column names show the (abbreviated) name of the tournament, the theme of the course, the round number, the wind speed (mph) on the first tee, the wind direction as given by the cardinal directions, and whether the tournament is a tour or a tournament.
+```{r}
+# Convert cardinal direction to angle (degrees)
+cardinal_conv <- data.frame(direction = c("N", "NE", "E", "SE", "S", "SW", "W", "NW"), angle = c(0, 45, 90, 135, 180, 225, 270, 315), stringsAsFactors = FALSE)
+data %<>% left_join(cardinal_conv, by = "direction")
+```
+### Analysis
+We can calculate some statistics for the wind speeds.
+This can also be split by theme.
+```{r}
+overview <- data %>% summarise(n = n(), mean_speed = mean(speed), sd_speed = sd(speed), err_mean = sd_speed/sqrt(n))
+overview
+
+overview_theme <- data %>% group_by(theme) %>% summarise(n = n(), mean_speed = mean(speed), sd_speed = sd(speed), err_mean = sd_speed/sqrt(n))
+overview_theme
+```
+We can see that the average wind speed is $`r myround(overview$mean_speed, 1)` \pm `r myround(overview$err_mean, 1)`$ mph.
+
+### Pretty plots!
+OK, here's the part everyone was waiting for...
+```{r}
+wind_qs <- quantile(data$speed, c(0.25,0.5,0.75))
+wind_histo <- ggplot(data = data, aes(x = speed)) +
+    geom_histogram(aes(y = ..density..), binwidth = 2, fill = "black", colour = "gray", alpha = 0.1) +
+    geom_density(alpha = 0.1, fill = "#FF0022", from = 0, to = 20, size = 1) +
+    geom_vline(xintercept = wind_qs, colour = "red", linetype = "dotted", size = 0.8) +
+    geom_vline(aes(xintercept = mean(speed)), colour = "blue", linetype = "dashed", size = 1) +
+    scale_x_continuous(lim = c(0,20), breaks = seq(0,20,4)) +
+    labs(x = "Wind speed (mph)", y = "Probability density") +
+    geom_text(data = data %>% summarise(n = n()),
+              aes(label = paste0("n = ", n),
+                  x = 18.5, y = 0.1), size = 7) +
+    theme_classic() +
+    theme(axis.text.x = element_text(size = 14))
+wind_histo
+```
+
+We can compare this to other typical distributions; here we have a normal cumulative distribution function (cdf; in blue) and one for a uniform distribution (in green).
+```{r}
+set.seed(1)
+sample_size <- length(data$speed) * 100
+uni_winds <- data.frame(speed = sample(1:20, size = sample_size, replace = TRUE))
+norm_winds <- data.frame(speed = rnorm(sample_size, overview$mean_speed, overview$sd_speed)) %>% round()
+
+wind_ecdf2 <- ggplot(data = data, aes(x = speed)) +
+    stat_ecdf(geom = "area", alpha = 0.1, fill = "red", colour = "black") +
+    #stat_ecdf(geom = "step", alpha = 0.1, colour = "black") +
+    stat_ecdf(data = uni_winds, geom = "line", colour = "green", linetype = "dashed") +
+    stat_ecdf(data = norm_winds, geom = "line", colour = "blue", linetype = "dashed") +
+    coord_cartesian(xlim = c(0, 20)) +
+    labs(x = "Wind speed (mph)", y = "Cumulative probability") +
+    geom_text(data = data %>% summarise(n = n()),
+              aes(label = paste0("n = ", n),
+                  x = 3, y = 0.9), size = 7) +
+    theme_bw() +
+    theme(axis.text.x = element_text(size = 14))
+wind_ecdf2
+```
+
+We see that we only have a $`r round((ecdf(data$speed)(9)) * 100, 1)`\%$ chance to have single digit winds for a given tournament round.
+(A cumulative distribution gives you the probability of getting a value $\leq x$ on a sample, so we read up from 9 mph and go left to find the chances of getting a wind speed of 9 or less.)
+
+We can also look at the direction of the wind, and plot a form of windrose.
+
+```{r}
+windplot2 <- ggplot(data = data, aes(x = angle, y = speed)) +
+    annotate("rect", xmin = 0, xmax = 360, ymin = 0, ymax = 5, alpha = 0.2, fill = "green") +
+    annotate("rect", xmin = 0, xmax = 360, ymin = 5, ymax = 10, alpha = 0.2, fill = "blue") +
+    annotate("rect", xmin = 0, xmax = 360, ymin = 10, ymax = 15, alpha = 0.2, fill = "yellow") +
+    annotate("rect", xmin = 0, xmax = 360, ymin = 15, ymax = 20, alpha = 0.2, fill = "red") +
+    geom_point(size = 6, shape = 21, colour = "black", aes(fill = theme)) +
+    scale_x_continuous(breaks = seq(0,315,45), lim = c(0, 360), labels = cardinal_conv$direction) +
+    scale_y_continuous(breaks = seq(0,20,5), lim = c(0, 20)) +
+    labs(y = "Wind speed (mph)", fill = "Theme") +
+    scale_fill_brewer(palette = "Set1") +
+    coord_polar(theta = "x", start = 0, direction = 1) +
+    theme_bw() +
+    theme(axis.title.x = element_blank())
+windplot2
+```
+```{r message=FALSE, results='hide', fig.show='hide'}
+source("C:/Users/Matt/Documents/speedgolf/windrose.R")
+windrose2 <- plot.windrose(data = data, spd = "speed", dir = "angle",
+                   spdseq = seq(0,20,4),
+                   dirres = 45,
+                   palette = "RdPu") +
+    scale_x_discrete(labels = cardinal_conv$direction) +
+    theme_bw() +
+    theme(axis.title.x = element_blank())
+```
+```{r}
+windrose2
+```
+
