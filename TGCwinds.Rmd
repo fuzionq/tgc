@@ -134,3 +134,8 @@ This makes the tournament side of the game intimidating for newer players.
 Without more data, I cannot tell if the theme makes a significant difference to the wind speeds. 
 
 I am in favour of more local gusts in-game, to better simulate the weather conditions, and also to limit the amount of exact calculation to offset the winds' effect.
+
+### Appendix
+```{r}
+data
+```
