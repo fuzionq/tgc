@@ -47,7 +47,7 @@ overview
 overview_theme <- data %>% group_by(theme) %>% summarise(n = n(), mean_speed = mean(speed), sd_speed = sd(speed), err_mean = sd_speed/sqrt(n))
 overview_theme
 ```
-We can see that the average wind speed is $`r myround(overview$mean_speed, 1)` \pm `r myround(overview$err_mean, 1)`$ mph.
+**We can see that the average wind speed is `r myround(overview$mean_speed, 1)` ± `r myround(overview$err_mean, 1)` mph.**
 
 ### Pretty plots!
 OK, here's the part everyone was waiting for...
@@ -90,7 +90,7 @@ wind_ecdf2 <- ggplot(data = data, aes(x = speed)) +
 wind_ecdf2
 ```
 
-We see that we only have a $`r round((ecdf(data$speed)(9)) * 100, 1)`\%$ chance to have single digit winds for a given tournament round.
+**We see that we only have a `r round((ecdf(data$speed)(9)) * 100, 1)`\% chance to have single digit winds for a given tournament round.**
 (A cumulative distribution gives you the probability of getting a value $\leq x$ on a sample, so we read up from 9 mph and go left to find the chances of getting a wind speed of 9 or less.)
 
 We can also look at the direction of the wind, and plot a form of windrose.
