@@ -123,8 +123,8 @@ wind_ecdf2
 
 ![](TGCwinds_files/figure-html/unnamed-chunk-6-1.png) 
 
-**We see that we only have a 34.9\% chance to have single digit winds for a given tournament round.**
-(A cumulative distribution gives you the probability of getting a value $\leq x$ on a sample, so we read up from 9 mph and go left to find the chances of getting a wind speed of 9 or less.)
+**We see that we only have a 34.9% chance to have single digit winds for a given tournament round.**
+(A cumulative distribution gives you the probability of getting a value = x on a sample, so we read up from 9 mph and go left to find the chances of getting a wind speed of 9 or less.)
 
 We can also look at the direction of the wind, and plot a form of windrose.
 
@@ -167,13 +167,14 @@ windrose2
 
 ### Summary
 
-Tournament winds in The Golf Club tend to be slightly higher than [real life wind speeds](http://average-wind-speed.findthebest.com/).
+Tournament winds in The Golf Club tend to be slightly higher than [real life wind speeds](http://average-wind-speed.findthebest.com/) e.g. North Carolina: 7.5 mph; Chicago: 10.3 mph.
 Also, they affect the ball significantly more than they should, even on 4 yard chip shots in game.
 This makes the tournament side of the game intimidating for newer players.
 
 Without more data, I cannot tell if the theme makes a significant difference to the wind speeds. 
 
 I am in favour of more local gusts in-game, to better simulate the weather conditions, and also to limit the amount of exact calculation to offset the winds' effect.
+Without winds, the game becomes very easy to calculate, e.g. see the 52 (-20) I shot yesterday in 1 mph winds in the HB ProAm tournament.
 
 ### Appendix
 
