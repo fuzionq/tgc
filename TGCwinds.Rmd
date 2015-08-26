@@ -47,7 +47,7 @@ overview
 overview_theme <- data %>% group_by(theme) %>% summarise(n = n(), mean_speed = mean(speed), sd_speed = sd(speed), err_mean = sd_speed/sqrt(n))
 overview_theme
 ```
-**We can see that the average wind speed is `r myround(overview$mean_speed, 1)` ± `r myround(overview$err_mean, 1)` mph.**
+**We can see that the average wind speed is `r myround(overview$mean_speed, 1)` &plusmn; `r myround(overview$err_mean, 1)` mph.**
 
 ### Pretty plots!
 OK, here's the part everyone was waiting for...

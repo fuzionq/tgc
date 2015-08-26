@@ -74,7 +74,7 @@ overview_theme
 ## 7       rural  4   11.00000 3.559026 1.7795130
 ## 8    tropical  8    8.75000 3.150964 1.1140339
 ```
-**We can see that the average wind speed is 11.0 Â± 0.4 mph.**
+**We can see that the average wind speed is 11.0 &plusmn; 0.4 mph.**
 
 ### Pretty plots!
 OK, here's the part everyone was waiting for...
