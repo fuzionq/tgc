@@ -1,7 +1,7 @@
 ---
 title: "TGC Tournament Winds"
 author: "fuzion"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
+date: "September 7th 2015"
 output:  
      html_document:  
        keep_md: true
@@ -55,10 +55,10 @@ OK, here's the part everyone was waiting for...
 wind_qs <- quantile(data$speed, c(0.25,0.5,0.75))
 wind_histo <- ggplot(data = data, aes(x = speed)) +
     geom_histogram(aes(y = ..density..), binwidth = 2, fill = "black", colour = "gray", alpha = 0.1) +
-    geom_density(alpha = 0.1, fill = "#FF0022", from = 0, to = 20, size = 1) +
+    geom_density(alpha = 0.1, fill = "#FF0022", from = 0, to = 22, size = 1) +
     geom_vline(xintercept = wind_qs, colour = "red", linetype = "dotted", size = 0.8) +
     geom_vline(aes(xintercept = mean(speed)), colour = "blue", linetype = "dashed", size = 1) +
-    scale_x_continuous(lim = c(0,20), breaks = seq(0,20,4)) +
+    scale_x_continuous(lim = c(0,24), breaks = seq(0,24,4)) +
     labs(x = "Wind speed (mph)", y = "Probability density") +
     geom_text(data = data %>% summarise(n = n()),
               aes(label = paste0("n = ", n),
@@ -72,7 +72,7 @@ We can compare this to other typical distributions; here we have a normal cumula
 ```{r}
 set.seed(1)
 sample_size <- length(data$speed) * 100
-uni_winds <- data.frame(speed = sample(1:20, size = sample_size, replace = TRUE))
+uni_winds <- data.frame(speed = sample(1:22, size = sample_size, replace = TRUE))
 norm_winds <- data.frame(speed = rnorm(sample_size, overview$mean_speed, overview$sd_speed)) %>% round()
 
 wind_ecdf2 <- ggplot(data = data, aes(x = speed)) +
@@ -80,7 +80,7 @@ wind_ecdf2 <- ggplot(data = data, aes(x = speed)) +
     #stat_ecdf(geom = "step", alpha = 0.1, colour = "black") +
     stat_ecdf(data = uni_winds, geom = "line", colour = "green", linetype = "dashed") +
     stat_ecdf(data = norm_winds, geom = "line", colour = "blue", linetype = "dashed") +
-    coord_cartesian(xlim = c(0, 20)) +
+    coord_cartesian(xlim = c(0, 22)) +
     labs(x = "Wind speed (mph)", y = "Cumulative probability") +
     geom_text(data = data %>% summarise(n = n()),
               aes(label = paste0("n = ", n),
@@ -101,10 +101,10 @@ windplot2 <- ggplot(data = data, aes(x = angle, y = speed)) +
     annotate("rect", xmin = 0, xmax = 360, ymin = 0, ymax = 5, alpha = 0.2, fill = "green") +
     annotate("rect", xmin = 0, xmax = 360, ymin = 5, ymax = 10, alpha = 0.2, fill = "blue") +
     annotate("rect", xmin = 0, xmax = 360, ymin = 10, ymax = 15, alpha = 0.2, fill = "yellow") +
-    annotate("rect", xmin = 0, xmax = 360, ymin = 15, ymax = 20, alpha = 0.2, fill = "red") +
+    annotate("rect", xmin = 0, xmax = 360, ymin = 15, ymax = 22, alpha = 0.2, fill = "red") +
     geom_point(size = 6, shape = 21, colour = "black", aes(fill = theme)) +
     scale_x_continuous(breaks = seq(0,315,45), lim = c(0, 360), labels = cardinal_conv$direction) +
-    scale_y_continuous(breaks = seq(0,20,5), lim = c(0, 20)) +
+    scale_y_continuous(breaks = seq(0,24,5), lim = c(0, 22)) +
     labs(y = "Wind speed (mph)", fill = "Theme") +
     scale_fill_brewer(palette = "Set1") +
     coord_polar(theta = "x", start = 0, direction = 1) +
@@ -115,7 +115,8 @@ windplot2
 ```{r message=FALSE, results='hide', fig.show='hide'}
 source("C:/Users/Matt/Documents/speedgolf/windrose.R")
 windrose2 <- plot.windrose(data = data, spd = "speed", dir = "angle",
-                   spdseq = seq(0,20,4),
+                   spdseq = seq(0,24,4),
+                   spdmax = 22,
                    dirres = 45,
                    palette = "RdPu") +
     scale_x_discrete(labels = cardinal_conv$direction) +

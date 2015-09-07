@@ -1,6 +1,6 @@
 # TGC Tournament Winds
 fuzion  
-`r format(Sys.time(), '%B %d, %Y')`  
+September 7th 2015  
 ### Introduction
 I have collected a sample of wind speeds and directions in tournaments for [The Golf Club](http://www.thegolfclubgame.com). 
 These are both from rounds that I have played, and from other people (usually by watching their rounds on [twitch](http://www.twitch.tv/directory/game/The%20Golf%20Club)).
@@ -53,7 +53,7 @@ overview
 
 ```
 ##     n mean_speed sd_speed  err_mean
-## 1 106   11.24528 4.030388 0.3914659
+## 1 115    11.1913 4.084407 0.3808729
 ```
 
 ```r
@@ -62,17 +62,19 @@ overview_theme
 ```
 
 ```
-## Source: local data frame [8 x 5]
+## Source: local data frame [9 x 5]
 ## 
-##         theme  n mean_speed sd_speed  err_mean
-## 1      boreal 22   11.68182 3.414066 0.7278812
-## 2 countryside 29   11.27586 4.078660 0.7573882
-## 3       delta  5    9.00000 2.828427 1.2649111
-## 4     harvest 10   12.60000 4.647580 1.4696938
-## 5   highlands 14   11.92857 3.812213 1.0188567
-## 6       links 13   10.61538 5.299976 1.4699488
-## 7       rural  5   12.20000 4.086563 1.8275667
-## 8    tropical  8    8.87500 3.090885 1.0927929
+##         theme     n mean_speed sd_speed  err_mean
+##         (chr) (int)      (dbl)    (dbl)     (dbl)
+## 1      boreal    22   11.68182 3.414066 0.7278812
+## 2 countryside    32   11.06250 4.039622 0.7141111
+## 3       delta     5    9.00000 2.828427 1.2649111
+## 4      desert     1   22.00000      NaN       NaN
+## 5     harvest    10   12.60000 4.647580 1.4696938
+## 6   highlands    18   11.16667 3.714043 0.8754084
+## 7       links    13   10.61538 5.299976 1.4699488
+## 8       rural     6   12.16667 3.656045 1.4925742
+## 9    tropical     8    8.87500 3.090885 1.0927929
 ```
 **We can see that the average wind speed is 11.2 &plusmn; 0.4 mph.**
 
@@ -83,10 +85,10 @@ OK, here's the part everyone was waiting for...
 wind_qs <- quantile(data$speed, c(0.25,0.5,0.75))
 wind_histo <- ggplot(data = data, aes(x = speed)) +
     geom_histogram(aes(y = ..density..), binwidth = 2, fill = "black", colour = "gray", alpha = 0.1) +
-    geom_density(alpha = 0.1, fill = "#FF0022", from = 0, to = 20, size = 1) +
+    geom_density(alpha = 0.1, fill = "#FF0022", from = 0, to = 22, size = 1) +
     geom_vline(xintercept = wind_qs, colour = "red", linetype = "dotted", size = 0.8) +
     geom_vline(aes(xintercept = mean(speed)), colour = "blue", linetype = "dashed", size = 1) +
-    scale_x_continuous(lim = c(0,20), breaks = seq(0,20,4)) +
+    scale_x_continuous(lim = c(0,24), breaks = seq(0,24,4)) +
     labs(x = "Wind speed (mph)", y = "Probability density") +
     geom_text(data = data %>% summarise(n = n()),
               aes(label = paste0("n = ", n),
@@ -103,7 +105,7 @@ We can compare this to other typical distributions; here we have a normal cumula
 ```r
 set.seed(1)
 sample_size <- length(data$speed) * 100
-uni_winds <- data.frame(speed = sample(1:20, size = sample_size, replace = TRUE))
+uni_winds <- data.frame(speed = sample(1:22, size = sample_size, replace = TRUE))
 norm_winds <- data.frame(speed = rnorm(sample_size, overview$mean_speed, overview$sd_speed)) %>% round()
 
 wind_ecdf2 <- ggplot(data = data, aes(x = speed)) +
@@ -111,7 +113,7 @@ wind_ecdf2 <- ggplot(data = data, aes(x = speed)) +
     #stat_ecdf(geom = "step", alpha = 0.1, colour = "black") +
     stat_ecdf(data = uni_winds, geom = "line", colour = "green", linetype = "dashed") +
     stat_ecdf(data = norm_winds, geom = "line", colour = "blue", linetype = "dashed") +
-    coord_cartesian(xlim = c(0, 20)) +
+    coord_cartesian(xlim = c(0, 22)) +
     labs(x = "Wind speed (mph)", y = "Cumulative probability") +
     geom_text(data = data %>% summarise(n = n()),
               aes(label = paste0("n = ", n),
@@ -123,7 +125,7 @@ wind_ecdf2
 
 ![](TGCwinds_files/figure-html/unnamed-chunk-6-1.png) 
 
-**We see that we only have a 33% chance to have single digit winds for a given tournament round.**
+**We see that we only have a 33.9% chance to have single digit winds for a given tournament round.**
 
 (A cumulative distribution gives you the probability of getting a value &le; x on a sample, so we read up from 9 mph and go left to find the chances of getting a wind speed of 9 or less.)
 
@@ -135,10 +137,10 @@ windplot2 <- ggplot(data = data, aes(x = angle, y = speed)) +
     annotate("rect", xmin = 0, xmax = 360, ymin = 0, ymax = 5, alpha = 0.2, fill = "green") +
     annotate("rect", xmin = 0, xmax = 360, ymin = 5, ymax = 10, alpha = 0.2, fill = "blue") +
     annotate("rect", xmin = 0, xmax = 360, ymin = 10, ymax = 15, alpha = 0.2, fill = "yellow") +
-    annotate("rect", xmin = 0, xmax = 360, ymin = 15, ymax = 20, alpha = 0.2, fill = "red") +
+    annotate("rect", xmin = 0, xmax = 360, ymin = 15, ymax = 22, alpha = 0.2, fill = "red") +
     geom_point(size = 6, shape = 21, colour = "black", aes(fill = theme)) +
     scale_x_continuous(breaks = seq(0,315,45), lim = c(0, 360), labels = cardinal_conv$direction) +
-    scale_y_continuous(breaks = seq(0,20,5), lim = c(0, 20)) +
+    scale_y_continuous(breaks = seq(0,24,5), lim = c(0, 22)) +
     labs(y = "Wind speed (mph)", fill = "Theme") +
     scale_fill_brewer(palette = "Set1") +
     coord_polar(theta = "x", start = 0, direction = 1) +
@@ -152,7 +154,8 @@ windplot2
 ```r
 source("C:/Users/Matt/Documents/speedgolf/windrose.R")
 windrose2 <- plot.windrose(data = data, spd = "speed", dir = "angle",
-                   spdseq = seq(0,20,4),
+                   spdseq = seq(0,24,4),
+                   spdmax = 22,
                    dirres = 45,
                    palette = "RdPu") +
     scale_x_discrete(labels = cardinal_conv$direction) +
@@ -279,16 +282,25 @@ data
 ## 92            cc-w35      boreal     3    16         E  TRUE    90
 ## 93            cc-w35      boreal     4     8         W  TRUE   270
 ## 94          euro-w35   highlands     1    16         E  TRUE    90
-## 95          euro-w35   highlands     1    16         S  TRUE   180
-## 96          euro-w35   highlands     1    16        NE  TRUE    45
-## 97          euro-w35   highlands     1    12         W  TRUE   270
+## 95          euro-w35   highlands     2    16         S  TRUE   180
+## 96          euro-w35   highlands     3    16        NE  TRUE    45
+## 97          euro-w35   highlands     4    12         W  TRUE   270
 ## 98           pga-w35      boreal     1    12         W  TRUE   270
 ## 99           pga-w35      boreal     2    10         E  TRUE    90
 ## 100          pga-w35      boreal     3    16         E  TRUE    90
-## 101          pga-w35      boreal     3    13         S  TRUE   180
-## 102    speed-golf-w6       rural     1    17        NW  TRUE   315
-## 103    speed-golf-w6      boreal     2    11         N  TRUE     0
+## 101          pga-w35      boreal     4    13         S  TRUE   180
+## 102    speed-golf-w7       rural     1    17        NW  TRUE   315
+## 103    speed-golf-w7      boreal     2    11         N  TRUE     0
 ## 104          web-w35 countryside     1    11         S  TRUE   180
 ## 105          web-w35 countryside     2    15        NE  TRUE    45
 ## 106          web-w35 countryside     3     9        SE  TRUE   135
+## 107          web-w35 countryside     4     5        NE  TRUE    45
+## 108          hb-ko-2 countryside     1    12         N FALSE     0
+## 109          hb-ko-2 countryside     2    10        SW FALSE   225
+## 110          pga-w36   highlands     1     7         S FALSE   180
+## 111          pga-w36   highlands     2     8        NW FALSE   315
+## 112          pga-w36   highlands     3    11         N FALSE     0
+## 113          pga-w36   highlands     4     8         S FALSE   180
+## 114    speed-golf-w8       rural     1    12        SW  TRUE   225
+## 115    speed-golf-w8      desert     2    22        NE  TRUE    45
 ```
